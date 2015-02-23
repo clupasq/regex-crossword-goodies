@@ -10,7 +10,12 @@ This project contains a set of enhancements for the http://regexcrossword.com/ w
 ## How to run
 
 * Copy the Javascript code and paste it into the browser's JS console
+
+-or-
+
 * Run the code as a [bookmarklet](http://en.wikipedia.org/wiki/Bookmarklet)
+
+Both actions are valid only in the context of a page containing a puzzle to solve.
 
 I might turn this into a Chrome Extension in the future. 
 
