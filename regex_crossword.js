@@ -134,7 +134,7 @@
     var controller = {
       validate: function (expressionText, word){
         if(expressionText && word) {
-          var re = new RegExp('^' + expressionText + '$');
+          var re = new RegExp('^(?:' + expressionText + ')$');
           return word.match(re) ? 'ok' : 'fail';
         }
         return 'inconclusive';
