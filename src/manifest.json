@@ -7,14 +7,16 @@
   "permissions": [
     "*://regexcrossword.com/*"
   ],
+  "web_accessible_resources": [
+    "regex_crossword.js"
+  ],
   "content_scripts": [{
     "matches": [
-        "*://regexcrossword.com/challenges/*",
-        "*://regexcrossword.com/playerpuzzles/*"
+        "*://regexcrossword.com/**"
       ],
       "js": [
-        "regex_crossword.js"
+        "main.js"
       ],
-      "run_at": "document_end"
+      "run_at": "document_idle"
   }]
 }
