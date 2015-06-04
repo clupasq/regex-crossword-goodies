@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+
+  "name": "Regex Crossword Goodies",
+  "description": "Provides additional functionality on the http://regexcrossword.com/ website: valid clue indicators, load/save puzzles",
+  "version": "0.1",
+  "permissions": [
+    "*://regexcrossword.com/*"
+  ],
+  "content_scripts": [{
+    "matches": [
+        "*://regexcrossword.com/challenges/*",
+        "*://regexcrossword.com/playerpuzzles/*"
+      ],
+      "js": [
+        "regex_crossword.js"
+      ],
+      "run_at": "document_end"
+  }]
+}

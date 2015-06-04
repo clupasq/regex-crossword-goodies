@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  console.info('goodies!');
+
   var emptyCellPlaceholder = '\xB7';
 
   var table = document.querySelector('table[ng-rotate]');
