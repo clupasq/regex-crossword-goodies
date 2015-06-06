@@ -3,7 +3,9 @@
 
   var config, logger;
 
-  config = w.goodies = w.goodies || { debugMode: 'on' };
+  config = w.goodies = w.goodies || { };
+
+  config.debugMode = !!localStorage.goodiesDebugMode;
 
   logger = {};
   ['debug', 'log', 'info', 'error', 'warn'].forEach(function (funcName) {
