@@ -120,7 +120,9 @@
       },
 
       RectangularPuzzleAdapter = function () {
-        var rowCount, colCount, self = this;
+        var rowCount, colCount,
+          self = this,
+          emptyCellPlaceholder = '\xB7';
 
         this.regexElements = [];
 
@@ -194,7 +196,7 @@
         }
 
         this.init = function () {
-          var textBoxes, cells;
+          var textBoxes;
 
           rowCount = scope.puzzle.answer.rows.length;
           colCount = scope.puzzle.answer.rows[0].length;
@@ -211,17 +213,35 @@
             return;
           }
 
-          cells = getCells(textBoxes);
+          this.cells = getCells(textBoxes);
 
-          addHorizontalRegexElements(cells);
-          addVerticalRegexElements(cells);
+          addHorizontalRegexElements(this.cells);
+          addVerticalRegexElements(this.cells);
         };
 
         this.getAnswer = function () {
-          return 'todo!';
+          var answer = '';
+
+          this.cells.forEach(function (c) {
+            answer += c.getValue() || emptyCellPlaceholder;
+          });
+
+          return answer;
         };
 
         this.setAnswer = function (answer) {
+          var i;
+
+          for (i = 0; i < this.cells.length; i++) {
+            if (i >= answer.length) {
+              break;
+            }
+
+            this.cells[i].setValue(answer[i]);
+
+            scope.$apply();
+          }
+
           logger.warn('todo: set answer to: ' + answer);
         };
       },
@@ -254,9 +274,7 @@
           var saveBtn, loadBtn;
 
           saveBtn = addButton('Save');
-          saveBtn.addEventListener('click', function () {
-            logger.log('save');
-          });
+          saveBtn.addEventListener('click', this.onSaveClick);
 
           loadBtn = addButton('Load');
           loadBtn.addEventListener('click', this.onLoadClick);
