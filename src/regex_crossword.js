@@ -1,220 +1,89 @@
 (function (w, d) {
   'use strict';
 
-  console.info('goodies!');
+  var config, logger;
 
-  var start = function() {
-    var emptyCellPlaceholder = '\xB7';
+  config = w.goodies = w.goodies || { debugMode: 'on' };
 
-    var table = d.querySelector('form.puzzle');
-    var textBoxes = table.querySelectorAll('td input[type="text"]');
-    var scope = angular.element(table).scope();
-
-    var rowCount = scope.puzzle.answer.rows.length;
-    var colCount = scope.puzzle.answer.rows[0].length;
-
-    var getAnswerChar = function (textBox) {
-      if (textBox.classList.contains('space')) {
-        return ' ';
+  logger = {};
+  ['debug', 'log', 'info', 'error', 'warn'].forEach(function (funcName) {
+    logger[funcName] = function () {
+      if (config.debugMode) {
+        console[funcName].apply(console, arguments);
       }
-      if (textBox.value) {
-        return textBox.value.toUpperCase();
+    };
+  });
+
+  function addPlayerPuzzlesPageFunctionality(scope, titleElement) {
+    var chk, ui = d.createElement('div');
+    ui.innerHTML = '<input type="checkbox" id="chkTodo" /> &nbsp;' +
+                   '<label for="chkTodo">Only show unsolved unambiguous puzzles</label>';
+
+    titleElement.parentElement.insertBefore(ui, titleElement.nextElementSibling);
+
+    chk = d.getElementById('chkTodo');
+    chk.addEventListener('click', function () {
+      scope.allPuzzles = scope.allPuzzles || scope.puzzles;
+
+      if (this.checked) {
+        scope.puzzles = scope.allPuzzles.filter(function (p) {
+          return !(p.solved || p.ambiguous);
+        });
+      } else {
+        scope.puzzles = scope.allPuzzles;
       }
-      return null;
-    };
-
-    var getAnswerCharAsText = function (textBox) {
-      return getAnswerChar(textBox) || emptyCellPlaceholder;
-    };
-
-    var save = function () {
-      var answerText = Array.prototype.map.call(textBoxes, getAnswerCharAsText).join('');
-      w.prompt('Here\'s your solution so far:', answerText);
-    };
-
-    var load = function () {
-      var saved = w.prompt('Enter previous solution:');
-
-      if (!saved) {
-        return;
-      }
-
-      saved.split('').forEach(function (l,idx) { 
-        if (idx >= textBoxes.length) {
-          return;
-        }
-
-        var row = Math.floor(idx / colCount);
-        var col = idx % colCount;
-        var cell = scope.puzzle.answer.rows[row][col];
-        cell.value = l === emptyCellPlaceholder ? undefined : l;
-
-        var correspondingTextBox = textBoxes[idx];     
-        if (l === ' ') {
-          correspondingTextBox.classList.add('space');
-        } else {
-          correspondingTextBox.classList.remove('space');
-        }
-      });
 
       scope.$apply();
-    };
-    
+    });
+  }
 
-    var showErrors = function () {
-      var model = {
-        getHorizontalPatterns: function () {
-          return scope.puzzle.patternsY.patterns;
-        },
-        getVerticalPatterns: function () {
-          return scope.puzzle.patternsX.patterns;
-        },
-        getHorizontalWord: function (wordIdx) {
-          var word = '';
-          var i, cellIndex, character;
+  function addPuzzleFunctionality(puzzleScope) {
+    if (!puzzleScope.puzzle) {
+      // puzzle not yet loaded...
+      return;
+    }
 
-          for (i = 0; i < colCount; i++) {
-            cellIndex = wordIdx * colCount + i;
-            character = getAnswerChar(textBoxes[cellIndex]);
-            if(!character) { return null; }
-            word += character;
-          }
-          return word;
-        },
-        getVerticalWord: function (wordIdx) {
-          var word = '';
-          var i, cellIndex, character;
-          
-          for (i = 0; i < rowCount; i++) {
-            cellIndex = wordIdx + i * colCount;
-            character = getAnswerChar(textBoxes[cellIndex]);
-            if(!character) { return null; }
-            word += character;
-          }
-          return word;
-        }
-      };
+    logger.info('puzzle: ', puzzleScope.puzzle);
+  }
 
-      var view = {
-        regexDOMElements: table.querySelectorAll('th'),
-        getRegexElementAtIndex: function (idx) {
-          return view.regexDOMElements[idx];
-        },
-        getHorizontalExpressionElements: function (rowNo){
-          var index = (colCount + 1) + 2 * rowNo;
-          return [index, index + 1].map(this.getRegexElementAtIndex);
-        },
-        getVerticalExpressionElements: function (colNo){
-          var index1 = colNo + 1;
-          var index2 = index1 + rowCount * 2 + colCount + 1;
-          return [index1, index2].map(this.getRegexElementAtIndex);
-        },
-        applyFormatting: function (element, validationResult) {
-          element.classList.remove('alert-success');
-          element.classList.remove('alert-danger');
+  function onViewChanged() {
+    logger.log('View changed!');
 
-          switch(validationResult){
-            case 'ok':
-              element.classList.add('alert-success');
-              break;
-            case 'fail':
-              element.classList.add('alert-danger');
-              break;
-          }
-        },
-        renderHorizontalResults: function (idx, resultA, resultB){
-          var elements = this.getHorizontalExpressionElements(idx);
-          this.applyFormatting(elements[0], resultA);
-          this.applyFormatting(elements[1], resultB);
-        },
-        renderVerticalResults: function (idx, resultA, resultB){
-          var elements = this.getVerticalExpressionElements(idx);
-          this.applyFormatting(elements[0], resultA);
-          this.applyFormatting(elements[1], resultB);
-        }
-      };
+    var scope, puzzleListTitleElement,
+      puzzleElement = d.querySelector('div.challenge-puzzle') || d.querySelector('div.playerpuzzle');
 
-      var controller = {
-        validate: function (expressionText, word){
-          if(expressionText && word) {
-            var re = new RegExp('^(?:' + expressionText + ')$');
-            return word.match(re) ? 'ok' : 'fail';
-          }
-          return 'inconclusive';
-        },
-        validateHorizontalExpressions: function () {
-          model.getHorizontalPatterns().forEach(function (pattern, idx) {
-            var word = model.getHorizontalWord(idx);
-            view.renderHorizontalResults(idx, 
-              controller.validate(pattern.a.value, word), 
-              controller.validate(pattern.b.value, word));
-          });        
-        },
-        validateVerticalExpressions: function () {
-          model.getVerticalPatterns().forEach(function (pattern, idx) {
-            var word = model.getVerticalWord(idx);
-            view.renderVerticalResults(idx, 
-              controller.validate(pattern.a.value, word), 
-              controller.validate(pattern.b.value, word));
-          });    
-        },
-        showErrors: function () {
-          controller.validateHorizontalExpressions();
-          controller.validateVerticalExpressions();
-        }
-      };
+    if (puzzleElement) {
+      scope = angular.element(puzzleElement).scope();
+      addPuzzleFunctionality(scope, puzzleElement);
+      return;
+    }
 
-      return controller.showErrors;
-    };
+    puzzleListTitleElement = d.querySelector('div.container h2');
 
-    var setupControls = function () {
-      var existingControlBar = d.querySelector('p.controls');
-      var newControlBar = d.createElement('p');
-      existingControlBar.parentElement.insertBefore(newControlBar, existingControlBar.nextSibling);
-
-      var addBtn = function (text, callback) {
-        var btn = d.createElement('button');
-        btn.type = 'button';
-        btn.textContent = text;
-        btn.className = 'btn btn-info btn-sm';
-        btn.addEventListener('click', callback);
-        newControlBar.appendChild(btn);
-      };
-
-      addBtn('Save', save);
-      addBtn('Load', load);
-      addBtn('Show Errors', showErrors());
-    };
-
-    setupControls();
-  };
-
-  function afterAngularLoads(callback) {
-    if (w.angular) {
-      callback();
-    } else {
-      setTimeout(function(){ afterAngularLoads(callback); }, 100);
+    if (puzzleListTitleElement && puzzleListTitleElement.textContent === 'Puzzles') {
+      scope = angular.element(puzzleListTitleElement).scope();
+      addPlayerPuzzlesPageFunctionality(scope, puzzleListTitleElement);
     }
   }
 
-  function hijackAngularScope(){
-    var rootElement = d.querySelector('div[ng-view]');
-    return angular.element(rootElement).scope();
+
+  function start() {
+    config.rootElement = d.querySelector('div[ng-view]');
+
+    if (!config.rootElement) {
+      logger.warn('root element not yet found.');
+      w.setTimeout(start, 100);
+      return;
+    }
+
+    logger.info('root element found!');
+    config.rootScope = angular.element(config.rootElement).scope().$root;
+
+    config.rootScope.$on('$viewContentLoaded', onViewChanged);
+    onViewChanged();
   }
 
-  function update(scope) {
-    console.log('should update now...');
-  }
-
-  afterAngularLoads(function(){
-    var scope = hijackAngularScope();
-
-    scope.$root.$on('$viewContentLoaded', function(event) {
-      update(scope);
-    });
-
-    update(scope);
-  });
+  start();
 
 }(window, document));
 
