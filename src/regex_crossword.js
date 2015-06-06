@@ -40,14 +40,30 @@
   function addPuzzleFunctionality(scope, topElement) {
     var puzzleAdapter, ui, persistence,
       puzzle = scope.puzzle,
-      Cell = function (input, model) {
+
+      Cell = function (inputElement, angularModel) {
+        var self = this;
+
+        this.ui = inputElement;
+        this.regexes = [];
+
+        inputElement.addEventListener('input', function () {
+          self.regexes.forEach(function (re) {
+            re.validate();
+          });
+        });
+
+        this.registerRegexElement = function (regexElement) {
+          this.regexes.push(regexElement);
+        };
+
         this.getValue = function () {
-          if (input.classList.contains('space')) {
+          if (inputElement.classList.contains('space')) {
             return ' ';
           }
 
-          if (input.value) {
-            return input.value.toUpperCase();
+          if (inputElement.value) {
+            return inputElement.value.toUpperCase();
           }
 
           return null;
@@ -55,17 +71,26 @@
 
         this.setValue = function (newValue) {
           if (newValue === ' ') {
-            input.classList.add('space');
+            inputElement.classList.add('space');
           } else {
-            input.classList.remove('space');
+            inputElement.classList.remove('space');
           }
-          model.value = newValue;
+          angularModel.value = newValue;
         };
       },
+
       RegexElement = function (cells, expression, uiClueElement) {
+        var self = this;
+
+        cells.forEach(function (c) {
+          c.registerRegexElement(self);
+        });
+
         this.regex = new RegExp('^(?:' + expression + ')$');
 
         this.validate = function () {
+          logger.debug('Validating: ' + this.regex);
+
           var answer = '', i, chr;
 
           for (i = 0; i < cells.length; i++) {
@@ -91,6 +116,7 @@
           }
         };
       },
+
       RectangularPuzzleAdapter = function () {
         var rowCount, colCount, self = this;
 
@@ -168,27 +194,25 @@
         this.init = function () {
           var textBoxes, cells;
 
-          textBoxes = topElement.querySelectorAll('input.char');
-
           rowCount = scope.puzzle.answer.rows.length;
           colCount = scope.puzzle.answer.rows[0].length;
 
-          cells = getCells(textBoxes);
+          logger.debug('Rectangular puzzle ' + colCount + ' by ' + rowCount);
+          textBoxes = topElement.querySelectorAll('input.char');
 
-          Array.prototype.forEach.call(textBoxes, function (txt) {
-            txt.addEventListener('input', function () {
-              self.validate();
-            });
-          });
+          if (textBoxes.length < rowCount * colCount) {
+            logger.debug('Waiting for textboxes to render...');
+            w.setTimeout(function () {
+              self.init();
+            }, 10);
+
+            return;
+          }
+
+          cells = getCells(textBoxes);
 
           addHorizontalRegexElements(cells);
           addVerticalRegexElements(cells);
-        };
-
-        this.validate = function () {
-          this.regexElements.forEach(function (re) {
-            re.validate();
-          });
         };
 
         this.getAnswer = function () {
@@ -199,11 +223,13 @@
           logger.warn('todo: set answer to: ' + answer);
         };
       },
+
       HexagonalPuzzleAdapter = function () {
         this.init = function () {
           logger.warn('todo!');
         };
       },
+
       UI = function () {
         var addButton = function (name) {
           var newBtn, controlContainer;
