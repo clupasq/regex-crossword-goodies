@@ -44,7 +44,6 @@
       puzzle = scope.puzzle,
 
       Cell = function (inputElement, angularModel) {
-        logger.debug(inputElement, angularModel);
         Cell.emptyCellPlaceholder = '\xB7';
 
         var self = this;
