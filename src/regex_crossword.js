@@ -44,6 +44,8 @@
       puzzle = scope.puzzle,
 
       Cell = function (inputElement, angularModel) {
+        Cell.emptyCellPlaceholder = '\xB7';
+
         var self = this;
 
         this.ui = inputElement;
@@ -76,6 +78,10 @@
             inputElement.classList.add('space');
           } else {
             inputElement.classList.remove('space');
+          }
+
+          if (newValue == Cell.emptyCellPlaceholder) {
+            newValue = null;
           }
           angularModel.value = newValue;
         };
@@ -119,12 +125,38 @@
         };
       },
 
-      RectangularPuzzleAdapter = function () {
-        var rowCount, colCount,
-          self = this,
-          emptyCellPlaceholder = '\xB7';
-
+      BasePuzzleAdapter = function () {
         this.regexElements = [];
+
+        this.getAnswer = function () {
+          var answer = '';
+
+          this.cells.forEach(function (c) {
+            answer += c.getValue() || Cell.emptyCellPlaceholder;
+          });
+
+          return answer;
+        };
+
+        this.setAnswer = function (answer) {
+          var i;
+
+          for (i = 0; i < this.cells.length; i++) {
+            if (i >= answer.length) {
+              break;
+            }
+
+            this.cells[i].setValue(answer[i]);
+
+            scope.$apply();
+          }
+        };
+      },
+
+      RectangularPuzzleAdapter = function () {
+        BasePuzzleAdapter.call(this);
+
+        var rowCount, colCount, self = this;
 
         function getCells(textBoxes) {
           var cells = [], i, j;
@@ -218,35 +250,11 @@
           addHorizontalRegexElements(this.cells);
           addVerticalRegexElements(this.cells);
         };
-
-        this.getAnswer = function () {
-          var answer = '';
-
-          this.cells.forEach(function (c) {
-            answer += c.getValue() || emptyCellPlaceholder;
-          });
-
-          return answer;
-        };
-
-        this.setAnswer = function (answer) {
-          var i;
-
-          for (i = 0; i < this.cells.length; i++) {
-            if (i >= answer.length) {
-              break;
-            }
-
-            this.cells[i].setValue(answer[i]);
-
-            scope.$apply();
-          }
-
-          logger.warn('todo: set answer to: ' + answer);
-        };
       },
 
       HexagonalPuzzleAdapter = function () {
+        BasePuzzleAdapter.call(this);
+        
         this.init = function () {
           logger.warn('todo!');
         };
