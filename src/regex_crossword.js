@@ -253,9 +253,66 @@
       },
 
       HexagonalPuzzleAdapter = function () {
+        var Hexagon = function(rowCount, middleRowSize, elements) {
+          // tests for this class available at http://jsbin.com/biwoya/13/edit
+          var currentOffset = 0,
+            middleRowIndex = (rowCount - 1) / 2,
+            currentRowSize = middleRowSize - middleRowIndex,
+            i, j, diagonal, rowDelta, idx;
+          
+          this.rows = [];
+          for (i = 0; i < rowCount; i++) {
+            this.rows.push(elements.slice(currentOffset, currentOffset + currentRowSize));
+            currentOffset = currentOffset + currentRowSize;
+            currentRowSize += i < rowCount / 2 ? 1 : -1;
+          }
+          
+          this.diagonalsNW_SE = [];
+          for (j = 0; j < middleRowSize; j++) {
+            diagonal = [];
+
+            for (i = 0; i < rowCount; i++) {
+              rowDelta = i < middleRowIndex ? (i - middleRowIndex) : 0;
+              idx = j + rowDelta;
+              
+              if(idx >= 0 && idx < this.rows[i].length) {
+                diagonal.push(this.rows[i][idx]);
+              }
+            }
+            
+            this.diagonalsNW_SE.push(diagonal.reverse());
+          }
+          
+          
+          this.diagonalsNE_SW = [];
+          for (j = 0; j < middleRowSize; j++) {
+            diagonal = [];
+
+            for (i = 0; i < rowCount; i++) {
+              rowDelta = i > middleRowIndex ? (middleRowIndex - i) : 0;
+              idx = j + rowDelta;
+              
+              if(idx >= 0 && idx < this.rows[i].length) {
+                diagonal.push(this.rows[i][idx]);
+              }
+            }
+
+            this.diagonalsNE_SW.push(diagonal);
+          }  
+        };
+
         BasePuzzleAdapter.call(this);
-        
+
         this.init = function () {
+          var puzzle = scope.puzzle;
+
+          this.rowCount = puzzle.patternsY.length;
+          this.middleRowLength = puzzle.patternsX.length;
+
+          this.cells = topElement.querySelectorAll('input.char');
+
+
+
           logger.warn('todo!');
         };
       },
