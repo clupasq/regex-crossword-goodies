@@ -57,8 +57,8 @@
           });
         });
 
-        this.registerRegexElement = function (regexElement) {
-          this.regexes.push(regexElement);
+        this.registerRegexValidator = function (regexValidator) {
+          this.regexes.push(regexValidator);
         };
 
         this.getValue = function () {
@@ -87,11 +87,11 @@
         };
       },
 
-      RegexElement = function (cells, expression, uiClueElement) {
+      RegexValidator = function (cells, expression, uiClueElement) {
         var self = this;
 
         cells.forEach(function (c) {
-          c.registerRegexElement(self);
+          c.registerRegexValidator(self);
         });
 
         this.regex = new RegExp('^(?:' + expression + ')$');
@@ -126,7 +126,7 @@
       },
 
       BasePuzzleAdapter = function () {
-        this.regexElements = [];
+        this.regexValidators = [];
 
         this.getAnswer = function () {
           var answer = '';
@@ -173,7 +173,7 @@
           return cells;
         }
 
-        function addHorizontalRegexElements(cells) {
+        function addHorizontalRegexValidators(cells) {
           var usedCells = [], patterns, i,
             clueUIElements = topElement.querySelectorAll('th.clue');
 
@@ -184,21 +184,21 @@
 
             // left clue
             if (patterns.a.value) {
-              self.regexElements.push(
-                new RegexElement(usedCells, patterns.a.value, clueUIElements[i * 2])
+              self.regexValidators.push(
+                new RegexValidator(usedCells, patterns.a.value, clueUIElements[i * 2])
               );
             }
 
             // right clue
             if (patterns.b.value) {
-              self.regexElements.push(
-                new RegexElement(usedCells, patterns.b.value, clueUIElements[i * 2 + 1])
+              self.regexValidators.push(
+                new RegexValidator(usedCells, patterns.b.value, clueUIElements[i * 2 + 1])
               );
             }
           }
         }
 
-        function addVerticalRegexElements(cells) {
+        function addVerticalRegexValidators(cells) {
           var usedCells, patterns, i, j,
             clueUIElements = topElement.querySelectorAll('div.clue');
 
@@ -213,15 +213,15 @@
 
             // top clue
             if (patterns.a.value) {
-              self.regexElements.push(
-                new RegexElement(usedCells, patterns.a.value, clueUIElements[j])
+              self.regexValidators.push(
+                new RegexValidator(usedCells, patterns.a.value, clueUIElements[j])
               );
             }
 
             // bottom clue
             if (patterns.b.value) {
-              self.regexElements.push(
-                new RegexElement(usedCells, patterns.b.value, clueUIElements[j + colCount])
+              self.regexValidators.push(
+                new RegexValidator(usedCells, patterns.b.value, clueUIElements[j + colCount])
               );
             }
           }
@@ -247,8 +247,8 @@
 
           this.cells = getCells(textBoxes);
 
-          addHorizontalRegexElements(this.cells);
-          addVerticalRegexElements(this.cells);
+          addHorizontalRegexValidators(this.cells);
+          addVerticalRegexValidators(this.cells);
         };
       },
 
@@ -302,17 +302,71 @@
 
         BasePuzzleAdapter.call(this);
 
+        function getLeftClueElements() {
+          return topElement.querySelectorAll('div.clue-left');
+        }
+
+        function getTopClueElements() {
+          return topElement.querySelectorAll('div.clue-top');
+        }
+
+        function getBottomClueElements() {
+          var elements = [], i, j, clues,
+            rows = topElement.querySelectorAll('div.row');
+
+          for (i = rows.length - 1; i >= 0; i--) {
+            clues = rows[i].querySelectorAll('div.clue-bottom');
+            for (j = 0; j < clues.length; j++) {
+              elements.push(clues[j]);
+            }
+          }
+
+          return elements;
+        }
+
         this.init = function () {
-          var hexPuzzle = scope.puzzle;
+          var hexPuzzle = scope.puzzle, cellHexagon, i, uiClues, uiTextBoxes;
 
           this.rowCount = hexPuzzle.patternsY.length;
           this.middleRowLength = hexPuzzle.patternsX.length;
 
-          this.cells = topElement.querySelectorAll('input.char');
+          uiTextBoxes = topElement.querySelectorAll('input.char');
+          this.cells = Array.prototype.map.call(uiTextBoxes, function (txt) {
+            return new Cell(txt);
+          });
+          this.regexValidators = [];
 
+          cellHexagon = new Hexagon(this.rowCount, this.middleRowLength, this.cells);
 
+          // hexagon rows
+          uiClues = getLeftClueElements();
+          for (i = 0; i < hexPuzzle.patternsY.length; i++) {
+            this.regexValidators.push(new RegexValidator(
+              cellHexagon.rows[i],
+              hexPuzzle.patternsY.patterns[i].a.value,
+              uiClues[i]
+            ));
+          }
 
-          logger.warn('todo!');
+          // hexagon NW-SE diagonals
+          uiClues = getBottomClueElements();
+          for (i = 0; i < hexPuzzle.patternsZ.length; i++) {
+            this.regexValidators.push(new RegexValidator(
+              cellHexagon.diagonalsNW_SE[i],
+              hexPuzzle.patternsZ.patterns[i].a.value,
+              uiClues[i]
+            ));
+          }
+
+          // hexagon NE-SW diagonals
+          uiClues = getTopClueElements();
+          for (i = 0; i < hexPuzzle.patternsX.length; i++) {
+            this.regexValidators.push(new RegexValidator(
+              cellHexagon.diagonalsNE_SW[i],
+              hexPuzzle.patternsX.patterns[i].a.value,
+              uiClues[i]
+            ));
+          }
         };
       },
 
