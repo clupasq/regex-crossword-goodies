@@ -18,15 +18,15 @@
 
   function addPlayerPuzzlesPageFunctionality(scope, titleElement) {
     var chk, ui = d.createElement('div');
+
+    scope.allPuzzles = scope.puzzles;
+
     ui.innerHTML = '<input type="checkbox" id="chkTodo" /> &nbsp;' +
                    '<label for="chkTodo">Only show unsolved unambiguous puzzles</label>';
 
     titleElement.parentElement.insertBefore(ui, titleElement.nextElementSibling);
-
     chk = d.getElementById('chkTodo');
     chk.addEventListener('click', function () {
-      scope.allPuzzles = scope.allPuzzles || scope.puzzles;
-
       if (this.checked) {
         scope.puzzles = scope.allPuzzles.filter(function (p) {
           return !(p.solved || p.ambiguous);
