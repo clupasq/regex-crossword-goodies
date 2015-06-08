@@ -151,6 +151,10 @@
 
             scope.$apply();
           }
+
+          this.regexValidators.forEach(function (re) {
+            re.validate();
+          });
         };
       },
 
