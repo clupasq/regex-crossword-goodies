@@ -2,18 +2,20 @@
   "manifest_version": 2,
 
   "name": "Regex Crossword Goodies",
-  "description": "Provides additional functionality on the http://regexcrossword.com/ website: valid clue indicators, load/save puzzles",
   "version": "0.1",
+
   "default_locale": "en",
-  "author": "Cristian Lupașcu",
-  "permissions": [
-    "*://regexcrossword.com/*"
-  ],
+  "description": "Provides additional functionality on the http://regexcrossword.com/ website: valid clue indicators, load/save puzzles",
   "icons": {
     "16": "assets/icon16.png",
     "48": "assets/icon48.png",
     "128": "assets/icon128.png"
   },
+  "author": "Cristian Lupașcu",
+  "homepage_url": "https://github.com/clupascu/regex-crossword-goodies/",
+  "permissions": [
+    "*://regexcrossword.com/*"
+  ],
   "web_accessible_resources": [
     "regex_crossword.js"
   ],
