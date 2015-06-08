@@ -44,6 +44,7 @@
       puzzle = scope.puzzle,
 
       Cell = function (inputElement, angularModel) {
+        logger.debug(inputElement, angularModel);
         Cell.emptyCellPlaceholder = '\xB7';
 
         var self = this;
@@ -325,15 +326,25 @@
         }
 
         this.init = function () {
-          var hexPuzzle = scope.puzzle, cellHexagon, i, uiClues, uiTextBoxes;
+          var hexPuzzle = scope.puzzle, cellHexagon, i, uiClues, textBoxes, cellModels;
 
           this.rowCount = hexPuzzle.patternsY.length;
           this.middleRowLength = hexPuzzle.patternsX.length;
 
-          uiTextBoxes = topElement.querySelectorAll('input.char');
-          this.cells = Array.prototype.map.call(uiTextBoxes, function (txt) {
-            return new Cell(txt);
+          textBoxes = topElement.querySelectorAll('input.char');
+          cellModels = [];
+          hexPuzzle.answer.rows.forEach(function (row) {
+            row.forEach(function (cell) {
+              if (cell) {
+                cellModels.push(cell);
+              }
+            });
           });
+          this.cells = [];
+          for (i = 0; i < textBoxes.length; i++) {
+            this.cells.push(new Cell(textBoxes[i], cellModels[i]));
+          }
+
           this.regexValidators = [];
 
           cellHexagon = new Hexagon(this.rowCount, this.middleRowLength, this.cells);
