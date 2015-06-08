@@ -40,7 +40,7 @@
   }
 
   function addPuzzleFunctionality(scope, topElement) {
-    var puzzleAdapter, ui, persistence,
+    var puzzleAdapter, persistenceUI, persistence,
       puzzle = scope.puzzle,
 
       Cell = function (inputElement, angularModel) {
@@ -316,7 +316,7 @@
         };
       },
 
-      UI = function () {
+      PersistenceUI = function () {
         var addButton = function (name) {
           var newBtn, controlContainer;
 
@@ -363,22 +363,22 @@
       }
     };
 
-    ui = new UI();
+    persistenceUI = new PersistenceUI();
 
     puzzleAdapter = puzzle.hexagonal
       ? new HexagonalPuzzleAdapter()
       : new RectangularPuzzleAdapter();
 
-    ui.onLoadClick = function () {
+    persistenceUI.onLoadClick = function () {
       logger.info('loading.');
       puzzleAdapter.setAnswer(persistence.load());
     };
-    ui.onSaveClick = function () {
+    persistenceUI.onSaveClick = function () {
       logger.info('saving.');
       persistence.save(puzzleAdapter.getAnswer());
     };
 
-    ui.init();
+    persistenceUI.init();
     puzzleAdapter.init();
 
     puzzleAdapter.onAnswerChange = function () {
