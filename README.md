@@ -2,6 +2,10 @@
 
 This is a Google Chrome Extension that provides a set of enhancements for the http://regexcrossword.com/ website.
 
+## Installation
+
+Make sure you're using [Google Chrome](http://www.google.com/chrome/). The extension is published [here](https://chrome.google.com/webstore/detail/regex-crossword-goodies/cfcmapoondlingnafablpgekhjiedckl), in the Chrome Web Store.
+
 ## Functionality
 
 * **Load/Save Puzzles** - you can copy/paste a textual representation of the current solution in order to resume it later.
