@@ -4,7 +4,6 @@
   "name": "Regex Crossword Goodies",
   "version": "0.1",
 
-  "default_locale": "en",
   "description": "Provides additional functionality on the http://regexcrossword.com/ website: valid clue indicators, load/save puzzles",
   "icons": {
     "16": "assets/icon16.png",
