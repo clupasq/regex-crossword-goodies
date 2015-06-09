@@ -29,7 +29,7 @@
     chk.addEventListener('click', function () {
       if (this.checked) {
         scope.puzzles = scope.allPuzzles.filter(function (p) {
-          return !(p.solved || p.ambiguous);
+          return !(scope.isSolved(p.id) || p.ambiguous);
         });
       } else {
         scope.puzzles = scope.allPuzzles;
