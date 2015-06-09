@@ -90,6 +90,11 @@
       RegexValidator = function (cells, expression, uiClueElement) {
         var self = this;
 
+        logger.debug('----------');
+        logger.debug(expression);
+        logger.debug('clue: ', uiClueElement);
+        cells.forEach(function (c) { logger.debug(c.ui); });        
+
         cells.forEach(function (c) {
           c.registerRegexValidator(self);
         });
@@ -268,7 +273,7 @@
           for (i = 0; i < rowCount; i++) {
             this.rows.push(elements.slice(currentOffset, currentOffset + currentRowSize));
             currentOffset = currentOffset + currentRowSize;
-            currentRowSize += i < rowCount / 2 ? 1 : -1;
+            currentRowSize += i < middleRowIndex ? 1 : -1;
           }
 
           this.diagonalsNW_SE = [];
@@ -302,7 +307,7 @@
 
             this.diagonalsNE_SW.push(diagonal);
           }
-        };
+        }, self = this;
 
         BasePuzzleAdapter.call(this);
 
@@ -335,6 +340,17 @@
           this.middleRowLength = hexPuzzle.patternsX.length;
 
           textBoxes = topElement.querySelectorAll('input.char');
+
+          if(!textBoxes.length) {
+            logger.debug('Waiting for hexagon textboxes to render...');
+            w.setTimeout(function () {
+              self.init();
+            }, 100)
+            return;
+          }
+
+          logger.info('Hexagon puzzle with ' + this.rowCount + ' rows, middle row with size ' + this.middleRowLength);
+
           cellModels = [];
           hexPuzzle.answer.rows.forEach(function (row) {
             row.forEach(function (cell) {
@@ -351,6 +367,8 @@
           this.regexValidators = [];
 
           cellHexagon = new Hexagon(this.rowCount, this.middleRowLength, this.cells);
+
+          logger.debug(cellHexagon);
 
           // hexagon rows
           uiClues = getLeftClueElements();
