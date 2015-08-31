@@ -18,24 +18,40 @@
 
   function addPlayerPuzzlesPageFunctionality(scope, titleElement) {
     var chk, ui = d.createElement('div');
+    var model = {
+      hideSolved: false,
+      hideAmbiguous: false
+    };
+    var allPuzzles = scope.puzzles;
 
-    scope.allPuzzles = scope.puzzles;
-
-    ui.innerHTML = '<input type="checkbox" id="chkTodo" /> &nbsp;' +
-                   '<label for="chkTodo">Only show unsolved unambiguous puzzles</label>';
+    ui.innerHTML = '<input type="checkbox" id="chkHideSolved" /> &nbsp;' +
+                   '<label for="chkHideSolved">Hide solved</label> <br />' +
+                   '<input type="checkbox" id="chkHideAmbiguous" /> &nbsp;' +
+                   '<label for="chkHideAmbiguous">Hide ambiguous</label>'
 
     titleElement.parentElement.insertBefore(ui, titleElement.nextElementSibling);
-    chk = d.getElementById('chkTodo');
-    chk.addEventListener('click', function () {
-      if (this.checked) {
-        scope.puzzles = scope.allPuzzles.filter(function (p) {
-          return !(scope.isSolved(p.id) || p.ambiguous);
-        });
-      } else {
-        scope.puzzles = scope.allPuzzles;
-      }
+
+    var updateDisplay = function () {
+      scope.puzzles = allPuzzles.filter(function (p) {
+        if (model.hideSolved && scope.isSolved(p.id)) {
+          return false;
+        }
+        if (model.hideAmbiguous && p.ambiguous) {
+          return false;
+        }
+        return true;
+      });
 
       scope.$apply();
+    }
+
+    d.getElementById('chkHideSolved').addEventListener('click', function () {
+      model.hideSolved = this.checked; 
+      updateDisplay();
+    });
+    d.getElementById('chkHideAmbiguous').addEventListener('click', function () {
+      model.hideAmbiguous = this.checked; 
+      updateDisplay();
     });
   }
 
