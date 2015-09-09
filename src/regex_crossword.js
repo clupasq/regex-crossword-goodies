@@ -16,13 +16,32 @@
     };
   });
 
+
+  var unbindPuzzleListLoadListener;
+
   function addPlayerPuzzlesPageFunctionality(scope, titleElement) {
+    if (unbindPuzzleListLoadListener) {
+      unbindPuzzleListLoadListener();
+      unbindPuzzleListLoadListener = null;
+    }
+
+    var allPuzzles = scope.puzzles;
+
+    if (!allPuzzles) {
+      // puzzles not yet loaded; set a listener to find out when they are
+
+      unbindPuzzleListLoadListener = scope.$watch('puzzles', function () {
+        addPlayerPuzzlesPageFunctionality(scope, titleElement);
+      });
+
+      return;
+    }
+
     var chk, ui = d.createElement('div');
     var model = {
       hideSolved: false,
       hideAmbiguous: false
     };
-    var allPuzzles = scope.puzzles;
 
     ui.innerHTML = '<input type="checkbox" id="chkHideSolved" /> &nbsp;' +
                    '<label for="chkHideSolved">Hide solved</label> <br />' +
