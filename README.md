@@ -16,6 +16,10 @@ Have fun playing this awesome game!
 
 ## Release notes
 
+### 0.1.4
+
+Fixed Player puzzles page bug - filtering functionality was not working, because it was gtetting initialized before puzzle data was received from the server.
+
 ### 0.1.3
 
 Player puzzles page - replaced the *Only show unsolved unambiguous* option with two options: *Hide solved* and *Hide ambiguous*.
