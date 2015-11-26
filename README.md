@@ -18,7 +18,7 @@ Have fun playing this awesome game!
 
 ### 0.1.4
 
-Fixed Player puzzles page bug - filtering functionality was not working, because it was gtetting initialized before puzzle data was received from the server.
+Fixed Player puzzles page bug - filtering functionality was not working (did not wait for the data to arrive from the server).
 
 ### 0.1.3
 
