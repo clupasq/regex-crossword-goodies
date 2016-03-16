@@ -65,11 +65,11 @@
     }
 
     d.getElementById('chkHideSolved').addEventListener('click', function () {
-      model.hideSolved = this.checked; 
+      model.hideSolved = this.checked;
       updateDisplay();
     });
     d.getElementById('chkHideAmbiguous').addEventListener('click', function () {
-      model.hideAmbiguous = this.checked; 
+      model.hideAmbiguous = this.checked;
       updateDisplay();
     });
   }
@@ -128,7 +128,7 @@
         logger.debug('----------');
         logger.debug(expression);
         logger.debug('clue: ', uiClueElement);
-        cells.forEach(function (c) { logger.debug(c.ui); });        
+        cells.forEach(function (c) { logger.debug(c.ui); });
 
         cells.forEach(function (c) {
           c.registerRegexValidator(self);
@@ -187,10 +187,13 @@
             }
 
             this.cells[i].setValue(answer[i]);
-
             scope.$apply();
           }
 
+          this.validateAll();
+        };
+
+        this.validateAll = function () {
           this.regexValidators.forEach(function (re) {
             re.validate();
           });
@@ -394,6 +397,7 @@
               }
             });
           });
+
           this.cells = [];
           for (i = 0; i < textBoxes.length; i++) {
             this.cells.push(new Cell(textBoxes[i], cellModels[i]));
@@ -501,6 +505,7 @@
 
     persistenceUI.init();
     puzzleAdapter.init();
+    puzzleAdapter.validateAll();
 
     puzzleAdapter.onAnswerChange = function () {
       puzzleAdapter.validate();
@@ -555,4 +560,3 @@
   start();
 
 }(window, document));
-
