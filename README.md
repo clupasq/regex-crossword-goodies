@@ -16,6 +16,10 @@ Have fun playing this awesome game!
 
 ## Release notes
 
+### 0.1.5
+
+Added auto-validation of the answer when a puzzle page is loaded (because RegexCrossword now saves answers).
+
 ### 0.1.4
 
 Fixed Player puzzles page bug - filtering functionality was not working (did not wait for the data to arrive from the server).
