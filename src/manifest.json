@@ -12,7 +12,7 @@
     "128": "assets/icon128.png"
   },
   "author": "Cristian Lupașcu",
-  "homepage_url": "https://github.com/clupascu/regex-crossword-goodies/",
+  "homepage_url": "https://github.com/wolfascu/regex-crossword-goodies/",
   "permissions": [
     "*://regexcrossword.com/*"
   ],
