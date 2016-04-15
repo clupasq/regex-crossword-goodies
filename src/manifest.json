@@ -3,7 +3,7 @@
 
   "name": "Regex Crossword Goodies",
   "short_name": "RegexGoodies",
-  "version": "0.1.5",
+  "version": "0.1.6",
 
   "description": "Provides additional functionality on the http://regexcrossword.com/ website: valid clue indicators, load/save puzzles",
   "icons": {

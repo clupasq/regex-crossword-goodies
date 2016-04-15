@@ -16,6 +16,10 @@ Have fun playing this awesome game!
 
 ## Release notes
 
+### 0.1.6
+
+Use color-blind friendly colors ([issue #2](https://github.com/wolfascu/regex-crossword-goodies/issues/2))
+
 ### 0.1.5
 
 Added auto-validation of the answer when a puzzle page is loaded (because RegexCrossword now saves answers).
