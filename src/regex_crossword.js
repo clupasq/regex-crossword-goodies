@@ -535,7 +535,7 @@
   function appendStyles() {
     var styleTag = d.createElement('style');
     styleTag.type = 'text/css';
-    styleTag.textContent = '.clue-error{color:red;}.clue-ok{color:#2A2;}';
+    styleTag.textContent = '.clue-error{color:red;}.clue-ok{color:rgba(46, 159, 255, 0.54);}';
     d.head.appendChild(styleTag);
   }
 
