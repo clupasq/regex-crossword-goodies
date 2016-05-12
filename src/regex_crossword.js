@@ -136,6 +136,13 @@
 
         this.regex = new RegExp('^(?:' + expression + ')$');
 
+        // add link to regexper
+        uiClueElement.classList.add('clue-link');
+        uiClueElement.addEventListener('click', function () {
+          var explanationUrl = 'https://regexper.com/#' + self.regex;
+          window.open(explanationUrl, '_blank');
+        });
+
         this.validate = function () {
           logger.debug('Validating: ' + this.regex);
 
@@ -535,7 +542,10 @@
   function appendStyles() {
     var styleTag = d.createElement('style');
     styleTag.type = 'text/css';
-    styleTag.textContent = '.clue-error{color:red;}.clue-ok{color:rgba(46, 159, 255, 0.54);}';
+    styleTag.textContent = '.clue-error { color:red; }' +
+      '.clue-ok { color: #2E9FFF; opacity: .55; } ' +
+      '.clue-link { cursor: pointer; }' +
+      '.clue-link:hover { opacity: .75; background-color: #fafafa; }';
     d.head.appendChild(styleTag);
   }
 
