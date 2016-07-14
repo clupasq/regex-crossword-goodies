@@ -75,7 +75,7 @@
   }
 
   function addPuzzleFunctionality(scope, topElement) {
-    var puzzleAdapter, persistenceUI, persistence,
+    var puzzleAdapter, persistenceUI, persistence, expressionAnalyzerUI,
       puzzle = scope.puzzle,
 
       Cell = function (inputElement, angularModel) {
@@ -136,12 +136,17 @@
 
         this.regex = new RegExp('^(?:' + expression + ')$');
 
-        // add link to regexper
+        // add possibility to analyze regexes
         uiClueElement.classList.add('clue-link');
         uiClueElement.addEventListener('click', function () {
-          var explanationUrl = 'https://regexper.com/#' + self.regex;
-          window.open(explanationUrl, '_blank');
+          expressionAnalyzerUI.show(self.regex);
         });
+        uiClueElement.addEventListener('mouseover', function (e) {
+          if (e.shiftKey) {
+            expressionAnalyzerUI.show(self.regex);
+          }
+        });
+
 
         this.validate = function () {
           logger.debug('Validating: ' + this.regex);
@@ -495,6 +500,45 @@
       }
     };
 
+    var ExpressionAnalyzerUI = function() {
+      var self = this;
+      RegexColorizer.addStyleSheet();
+      var form = document.querySelector('form.puzzle');
+      var analizerDiv = document.createElement('div');
+      analizerDiv.classList.add('row');
+      analizerDiv.innerHTML = `
+        <div class="col-xs-10">
+          <pre id="regexHighlighter" class="regex-color">click (or shift-hover over) an expression to see it here...</pre>
+        </div>
+        <div class="col-xs-2">
+          <button id="btnExternalExplain" type="button" class="btn btn-default">see on regexper.com</button>
+        </div>
+        `;
+
+      form.insertBefore(analizerDiv, form.firstChild);
+
+      var expressionTxt = document.getElementById('regexHighlighter');
+      var explainBtn = document.getElementById('btnExternalExplain');
+
+      this.show = function(expression) {
+        if (this.expression === expression) {
+          return;
+        }
+        this.expression = expression;
+        expressionTxt.innerHTML = RegexColorizer.colorizeText(expression);
+      };
+
+      explainBtn.addEventListener('click', function() {
+        if (!self.expression) {
+          return;
+        }
+        var explanationUrl = 'https://regexper.com/#' + self.expression;
+        window.open(explanationUrl, '_blank');
+      });
+    };
+
+    expressionAnalyzerUI = new ExpressionAnalyzerUI();
+
     persistenceUI = new PersistenceUI();
 
     puzzleAdapter = puzzle.hexagonal
@@ -542,10 +586,11 @@
   function appendStyles() {
     var styleTag = d.createElement('style');
     styleTag.type = 'text/css';
-    styleTag.textContent = '.clue-error { color:red; }' +
-      '.clue-ok { color: #2E9FFF; opacity: .55; } ' +
-      '.clue-link { cursor: pointer; }' +
-      '.clue-link:hover { opacity: .75; background-color: #fafafa; }';
+    styleTag.textContent = `
+      .clue-error { color:red; }
+      .clue-ok { color: #2E9FFF; opacity: .55; }
+      .clue-link { cursor: pointer; }
+      .clue-link:hover { opacity: .75; background-color: #fafafa; }`;
     d.head.appendChild(styleTag);
   }
 

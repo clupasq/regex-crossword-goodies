@@ -17,7 +17,8 @@
     "*://regexcrossword.com/*"
   ],
   "web_accessible_resources": [
-    "regex_crossword.js"
+    "regex-crossword.js",
+    "regex-colorizer.js"
   ],
   "content_scripts": [{
     "matches": [
