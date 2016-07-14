@@ -532,7 +532,7 @@
         if (!self.expression) {
           return;
         }
-        var explanationUrl = 'https://regexper.com/#' + self.expression;
+        var explanationUrl = 'https://regexper.com/#' + encodeURIComponent(self.expression);
         window.open(explanationUrl, '_blank');
       });
     };
