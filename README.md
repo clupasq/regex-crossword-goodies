@@ -17,25 +17,30 @@ Have fun playing this awesome game!
 
 ## Release notes
 
+### 0.1.8
+
+* Added a syntax-highlighted view of the regex patterns.
+* Better UI for redirecting to https://regexper.com
+
 ### 0.1.7
 
-Made the puzzle clues link to https://regexper.com for explanations.
+* Made the puzzle clues link to https://regexper.com for explanations.
 
 ### 0.1.6
 
-Use color-blind friendly colors ([issue #2](https://github.com/wolfascu/regex-crossword-goodies/issues/2))
+* Use color-blind friendly colors ([issue #2](https://github.com/wolfascu/regex-crossword-goodies/issues/2))
 
 ### 0.1.5
 
-Added auto-validation of the answer when a puzzle page is loaded (because RegexCrossword now saves answers).
+* Added auto-validation of the answer when a puzzle page is loaded (because RegexCrossword now saves answers).
 
 ### 0.1.4
 
-Fixed Player puzzles page bug - filtering functionality was not working (did not wait for the data to arrive from the server).
+* Fixed Player puzzles page bug - filtering functionality was not working (did not wait for the data to arrive from the server).
 
 ### 0.1.3
 
-Player puzzles page - replaced the *Only show unsolved unambiguous* option with two options: *Hide solved* and *Hide ambiguous*.
+* Player puzzles page - replaced the *Only show unsolved unambiguous* option with two options: *Hide solved* and *Hide ambiguous*.
 
 ### 0.1.2
 
